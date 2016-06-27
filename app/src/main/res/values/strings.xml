@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Dona Chica</string>
+
+    <string name="navigation_drawer_open">Abrir navegação</string>
+    <string name="navigation_drawer_close">Fechar navegação</string>
+
+    <string name="action_settings">Configurações</string>
+</resources>
