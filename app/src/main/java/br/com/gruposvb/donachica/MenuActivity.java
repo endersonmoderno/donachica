@@ -116,7 +116,11 @@ public class MenuActivity extends AppCompatActivity
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
-
+            LoginModel model = new LoginModel(this);
+            if(model!=null){
+                if(model.getLogout())
+                    finish();
+            }
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

@@ -33,6 +33,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -54,13 +55,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      */
     private static final int REQUEST_READ_CONTACTS = 0;
 
-    /**
-     * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
-     */
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
-    };
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
@@ -201,12 +195,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
 
     private boolean isEmailValid(String email) {
-        //TODO: Replace this with your own logic
         return email.contains("@");
     }
 
     private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
         return password.length() > 4;
     }
 
@@ -309,6 +301,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         private final String mEmail;
         private final String mPassword;
 
+        private JSONObject login = null;
+
         UserLoginTask(String email, String password) {
             mEmail = email;
             mPassword = password;
@@ -316,24 +310,15 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
+            //carrega modelo
+            LoginModel model = new LoginModel(contexto);
 
-            try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
+            //se há modelo
+            if (model != null) {
+                //fazer login
+                login = model.getLogin(mEmail, mPassword);
             }
 
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
-            }
-
-            // TODO: register the new account here.
             return true;
         }
 
@@ -342,23 +327,35 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mAuthTask = null;
             showProgress(false);
 
-            //carrega modelo
-            LoginModel model = new LoginModel(contexto);
-
-            //se há modelo
-            if (model != null) {
-                JSONObject login = model.getLogin(mEmail, mPassword);
-
+            try {
                 //verifica se achou usuário
                 if (login != null) {
-                    Toast.makeText(getApplicationContext(), R.string.entrando,Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(LoginActivity.this, MenuActivity.class);
-                    startActivity(intent);
-                    finish();
+
+                    //carrega obj retornado
+                    JSONObject retorno = login.getJSONObject("retorno");
+
+                    //verifica se há retorno
+                    if (retorno != null) {
+
+                        //carrega status
+                        String status = retorno.getString("status");
+
+                        if(status.equals("ok")) {
+                            Toast.makeText(getApplicationContext(), R.string.entrando, Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(LoginActivity.this, MenuActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }else{
+                            mPasswordView.setError(retorno.getString("erro"));
+                            mPasswordView.requestFocus();
+                        }
+                    }
                 } else {
                     mPasswordView.setError(getString(R.string.error_incorrect_password));
                     mPasswordView.requestFocus();
                 }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
         }
 

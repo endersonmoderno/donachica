@@ -2,7 +2,6 @@ package br.com.gruposvb.donachica.Models;
 
 import android.content.Context;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -13,6 +12,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import br.com.gruposvb.donachica.Helper;
+import br.com.gruposvb.donachica.Services;
 
 /**
  * Created by ender on 29/06/2016.
@@ -20,7 +20,7 @@ import br.com.gruposvb.donachica.Helper;
 public class LoginModel {
 
     //region variáveis globais da classe
-    private static final String JSON_NAME = "usuarios"; //json
+    private static final String JSON_NAME = "login"; //json
     private static Context CTX;
     private static String JSON_ARQUIVO;
     //endregion
@@ -60,6 +60,20 @@ public class LoginModel {
         setToken(obj);
 
         return obj;
+    }
+
+    //faz logout
+    public boolean getLogout(){
+
+        try {
+            FileOutputStream arquivo = new FileOutputStream(JSON_ARQUIVO);
+            arquivo.write(("").getBytes());
+            arquivo.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return true;
     }
 
     //retorna usuário
@@ -109,29 +123,28 @@ public class LoginModel {
 
     //retorna usuário online
     private JSONObject getUsuarioOnline(String login, String senha) {
+
+        //retorno padrão
+        JSONObject obj = new JSONObject();
+
         try {
 
-            //TODO: trocar por consulta na API
+            //carregar serviço API
+            Services service = new Services();
 
-            //objeto padrão
-            JSONObject obj = new JSONObject();
-            obj.put("status", "ok");
+            //carrega parâmtros
+            JSONObject parametros = new JSONObject();
+            parametros.put("login", login);
+            parametros.put("senha", senha);
 
-            //dados
-            JSONObject dados = new JSONObject();
-            dados.put("token", "xxxxxxxx");
+            //faz login na api
+            obj = service.getLogin(parametros);
 
-            //Array dados
-            JSONArray arrDados = new JSONArray();
-            arrDados.put(dados);
-
-            obj.put("dados", arrDados);
-
-            return obj;
         } catch (JSONException e) {
             e.printStackTrace();
-            return null;
         }
+
+        return obj;
     }
 
     //endregion
