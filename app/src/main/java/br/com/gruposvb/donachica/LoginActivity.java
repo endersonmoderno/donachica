@@ -3,6 +3,8 @@ package br.com.gruposvb.donachica;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
@@ -31,8 +33,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import br.com.gruposvb.donachica.Models.LoginModel;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -40,6 +46,8 @@ import static android.Manifest.permission.READ_CONTACTS;
  * A login screen that offers login via email/password.
  */
 public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
+
+    public Context contexto = this;
 
     /**
      * Id to identity READ_CONTACTS permission request.
@@ -334,14 +342,23 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mAuthTask = null;
             showProgress(false);
 
-            if (success) {
-                //finish();
-                Toast.makeText(getApplicationContext(), R.string.entrando,Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent("br.com.gruposvb.donachica.MenuActivity");
-                startActivity(intent);
-            } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
+            //carrega modelo
+            LoginModel model = new LoginModel(contexto);
+
+            //se há modelo
+            if (model != null) {
+                JSONObject login = model.getLogin(mEmail, mPassword);
+
+                //verifica se achou usuário
+                if (login != null) {
+                    Toast.makeText(getApplicationContext(), R.string.entrando,Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(LoginActivity.this, MenuActivity.class);
+                    startActivity(intent);
+                    finish();
+                } else {
+                    mPasswordView.setError(getString(R.string.error_incorrect_password));
+                    mPasswordView.requestFocus();
+                }
             }
         }
 

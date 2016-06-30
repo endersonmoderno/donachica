@@ -18,5 +18,6 @@
     <string name="error_field_required">Campo obrigatório</string>
     <string name="permission_rationale">"Permissão de Contatos é necessária para continuar."</string>
     <string name="entrando">Entrando...</string>
+    <string name="title_activity_listas">ListasActivity</string>
 
 </resources>
