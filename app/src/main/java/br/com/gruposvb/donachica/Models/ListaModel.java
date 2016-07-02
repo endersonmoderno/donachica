@@ -24,7 +24,7 @@ import br.com.gruposvb.donachica.Services;
 public class ListaModel {
 
     //region variáveis globais da classe
-    private static final String JSON_NAME = "conteudo"; //json
+    private static final String JSON_NAME = "listas"; //json
     private static Context CTX;
     private static String JSON_ARQUIVO;
     //endregion
@@ -48,9 +48,6 @@ public class ListaModel {
             e.printStackTrace();
         }
     }
-
-
-    //region Métodos expostos
 
     //obtem listas
     public Entities.Retorno obterListas(JSONObject parametros, String token) {
@@ -82,6 +79,8 @@ public class ListaModel {
 
         return null;
     }
+
+    //region Métodos expostos
 
     //retorna dados locais
     private JSONObject getListasLocal() {
@@ -126,7 +125,7 @@ public class ListaModel {
 
     //endregion
 
-    //region Pases
+    //region Parses Json to Entity
 
     //Parse Retorno
     public Entities.Retorno parseRetorno(JSONObject json) {

@@ -23,11 +23,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import br.com.gruposvb.donachica.Entities.Login;
@@ -78,9 +76,12 @@ public class MenuActivity extends AppCompatActivity
                 progressBar = (ProgressBar) findViewById(R.id.progress_bar);
                 progressBar.setVisibility(View.VISIBLE);
 
-                //carrega listas
-                new getListas().execute(objToken.getToken());
-
+                //obter listas
+                getListas execListas = new getListas();
+                if (execListas == null || execListas.getStatus() != AsyncTask.Status.RUNNING) {
+                    execListas = new getListas();
+                    execListas.execute(objToken.getToken());
+                }
             } else {
                 Intent intent = new Intent(MenuActivity.this, LoginActivity.class);
                 startActivity(intent);
@@ -154,7 +155,7 @@ public class MenuActivity extends AppCompatActivity
     }
 
     //carrega listas
-    public class getListas extends AsyncTask<String, Void, Integer> {
+    class getListas extends AsyncTask<String, Void, Integer> {
 
         @Override
         protected void onPreExecute() {
@@ -232,7 +233,7 @@ public class MenuActivity extends AppCompatActivity
         }
     }
 
-    public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.CustomViewHolder> {
+    class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.CustomViewHolder> {
         private List<Entities.Lista> _listLista;
         private Context mContext;
 
@@ -254,6 +255,7 @@ public class MenuActivity extends AppCompatActivity
 
             //Setting text view title
             customViewHolder.textView.setText(Html.fromHtml(lista.getNome()));
+            customViewHolder.imageView.setBackgroundColor(1);
         }
 
         @Override
