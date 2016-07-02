@@ -12,4 +12,6 @@
     tools:context="br.com.gruposvb.donachica.ListasActivity"
     tools:showIn="@layout/activity_listas">
 
+    <include layout="@layout/lista_linha" />
+
 </RelativeLayout>

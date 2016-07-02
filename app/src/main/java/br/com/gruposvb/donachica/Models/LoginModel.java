@@ -11,6 +11,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import br.com.gruposvb.donachica.Entities;
 import br.com.gruposvb.donachica.Helper;
 import br.com.gruposvb.donachica.Services;
 
@@ -48,27 +49,68 @@ public class LoginModel {
     }
 
     //faz login
-    public JSONObject getLogin(String login, String senha) {
-        //carrega usuario online
-        JSONObject obj = getUsuarioOnline(login, senha);
+    public Entities.Login getLogin(String login, String senha) {
 
-        //verifica se não encontrou usuário
-        if(obj == null)
-            return null;
+        try {
+            //carrega usuario online
+            JSONObject obj = getUsuarioOnline(login, senha);
 
-        //grava usuário em local
-        setToken(obj);
+            //verifica se não encontrou usuário
+            if (obj == null)
+                return null;
 
-        return obj;
+            //carrega obj retornado
+            JSONObject retorno = obj.getJSONObject("retorno");
+
+            //verifica se há retorno
+            if (retorno != null) {
+
+                //carrega dados
+                JSONObject dados = retorno.getJSONObject("dados");
+
+                if (dados != null) {
+
+                    //carrega status
+                    String status = retorno.getString("status");
+
+                    //converter json em Entity
+                    Entities.Login entity = new Entities.Login();
+                    entity.setStatus(status);
+
+                    //verifica se retornou ok
+                    if (status.equals("ok")) {
+                        entity.setToken(dados.getString("token"));
+
+                        //grava usuário em local
+                        setToken(obj);
+                    } else {
+                        entity.setErro(dados.getString("erro"));
+                    }
+
+                    return entity;
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     //faz logout
-    public boolean getLogout(){
+    public boolean getLogout() {
 
         try {
+
+            //limpa dados de login local
             FileOutputStream arquivo = new FileOutputStream(JSON_ARQUIVO);
             arquivo.write(("").getBytes());
             arquivo.close();
+
+            //esvazia sessão API
+            Services model = new Services();
+            model.getLogout();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -76,8 +118,41 @@ public class LoginModel {
         return true;
     }
 
-    //retorna usuário
-    public JSONObject getToken() {
+    public Entities.Login obterToken(){
+        //recupera token
+        JSONObject objToken = getToken();
+        if (objToken != null) {
+            try {
+                //carrega retorno
+                JSONObject retorno = objToken.getJSONObject("retorno");
+                if (retorno != null) {
+
+                    //carrega dados
+                    JSONObject dados = retorno.getJSONObject("dados");
+                    if (dados != null) {
+
+                        //converter json em Entity
+                        Entities.Login entity = new Entities.Login();
+                        entity.setStatus("local");
+                        entity.setToken(dados.getString("token"));
+
+                        return entity;
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return null;
+    }
+
+    //endregion
+
+    //region métodos internos
+
+    //retorna token
+    private JSONObject getToken() {
         try {
             JSONObject obj = null;
 
@@ -102,10 +177,6 @@ public class LoginModel {
         }
         return null;
     }
-
-    //endregion
-
-    //region métodos internos
 
     //grava dados em local
     private void setToken(JSONObject obj) {

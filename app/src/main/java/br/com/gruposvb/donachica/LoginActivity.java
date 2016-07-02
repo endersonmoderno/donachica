@@ -33,12 +33,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.gruposvb.donachica.Entities.Login;
 import br.com.gruposvb.donachica.Models.LoginModel;
 
 import static android.Manifest.permission.READ_CONTACTS;
@@ -301,7 +299,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         private final String mEmail;
         private final String mPassword;
 
-        private JSONObject login = null;
+        private Login login = null;
 
         UserLoginTask(String email, String password) {
             mEmail = email;
@@ -327,35 +325,24 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mAuthTask = null;
             showProgress(false);
 
-            try {
-                //verifica se achou usuário
-                if (login != null) {
+            //verifica se achou usuário
+            if (login != null) {
 
-                    //carrega obj retornado
-                    JSONObject retorno = login.getJSONObject("retorno");
-
-                    //verifica se há retorno
-                    if (retorno != null) {
-
-                        //carrega status
-                        String status = retorno.getString("status");
-
-                        if(status.equals("ok")) {
-                            Toast.makeText(getApplicationContext(), R.string.entrando, Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(LoginActivity.this, MenuActivity.class);
-                            startActivity(intent);
-                            finish();
-                        }else{
-                            mPasswordView.setError(retorno.getString("erro"));
-                            mPasswordView.requestFocus();
-                        }
-                    }
-                } else {
-                    mPasswordView.setError(getString(R.string.error_incorrect_password));
+                if(login.getStatus().equals("ok")) {
+                    Toast.makeText(getApplicationContext(), R.string.entrando, Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(LoginActivity.this, MenuActivity.class);
+                    startActivity(intent);
+                    finish();
+                }else{
+                    final String erro = login.getErro();
+                    Toast.makeText(getApplicationContext(), erro, Toast.LENGTH_SHORT).show();
+                    mPasswordView.setError(erro);
                     mPasswordView.requestFocus();
                 }
-            } catch (JSONException e) {
-                e.printStackTrace();
+            } else {
+                Toast.makeText(getApplicationContext(), R.string.error_incorrect_password, Toast.LENGTH_SHORT).show();
+                mPasswordView.setError(getString(R.string.error_incorrect_password));
+                mPasswordView.requestFocus();
             }
         }
 
