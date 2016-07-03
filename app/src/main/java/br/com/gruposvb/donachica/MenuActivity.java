@@ -256,6 +256,8 @@ public class MenuActivity extends AppCompatActivity
             //Setting text view title
             customViewHolder.textView.setText(Html.fromHtml(lista.getNome()));
             customViewHolder.imageView.setBackgroundColor(1);
+
+            //TODO: criar mais campos no card e link
         }
 
         @Override
