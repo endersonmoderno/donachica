@@ -1,14 +1,11 @@
 package br.com.gruposvb.donachica;
 
-import android.content.Context;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -140,7 +137,7 @@ public class Services {
 
     //region API - mod_donachica
 
-    //invoca API mod_login/login
+    //invoca API mod_donachica/conteudo/obter
 
     public JSONObject obterListas(JSONObject parametro, String token) {
 

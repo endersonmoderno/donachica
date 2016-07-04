@@ -2,6 +2,7 @@ package br.com.gruposvb.donachica;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -244,7 +245,8 @@ public class MenuActivity extends AppCompatActivity
 
         @Override
         public CustomViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-            View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.lista_linha, null);
+            //determina o layout
+            View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.row_lista, null);
             CustomViewHolder viewHolder = new CustomViewHolder(view);
             return viewHolder;
         }
@@ -253,11 +255,37 @@ public class MenuActivity extends AppCompatActivity
         public void onBindViewHolder(CustomViewHolder customViewHolder, int i) {
             Entities.Lista lista = _listLista.get(i);
 
-            //Setting text view title
+            //passar dados
             customViewHolder.textView.setText(Html.fromHtml(lista.getNome()));
-            customViewHolder.imageView.setBackgroundColor(1);
+            customViewHolder.textView2.setText(Html.fromHtml(lista.getDescricao()));
 
-            //TODO: criar mais campos no card e link
+            //definir link destino
+            customViewHolder.NomeLista = lista.getModulo();
+
+            int cor; //determina cor
+            int icone; //determina ícone
+
+            //verifica o tipo de lista
+            switch (customViewHolder.NomeLista){
+                case ("laranja"):
+                    cor = getColor(R.color.laranja);
+                    icone = R.drawable.ic_icone_laranja;
+                    break;
+                case ("verde"):
+                    cor = getColor(R.color.verde);
+                    icone = R.drawable.ic_icone_verde;
+                    break;
+                default:
+                    cor = getColor(R.color.azul);
+                    icone = R.drawable.ic_icone_azul;
+                    break;
+            }
+
+            //define cor
+            customViewHolder.imageView.setBackgroundColor(cor);
+
+            //define ícone
+            customViewHolder.imageView2.setImageDrawable(getDrawable(icone));
         }
 
         @Override
@@ -267,12 +295,29 @@ public class MenuActivity extends AppCompatActivity
 
         public class CustomViewHolder extends RecyclerView.ViewHolder {
             protected ImageView imageView;
+            protected ImageView imageView2;
             protected TextView textView;
+            protected TextView textView2;
+            protected String NomeLista;
 
             public CustomViewHolder(View view) {
                 super(view);
                 this.imageView = (ImageView) view.findViewById(R.id.thumbnail);
+                this.imageView2 = (ImageView) view.findViewById(R.id.icone);
                 this.textView = (TextView) view.findViewById(R.id.title);
+                this.textView2 = (TextView) view.findViewById(R.id.descricao);
+
+                //definir método click
+                view.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(MenuActivity.this, ListaActivity.class);
+                        Bundle parametros = new Bundle();
+                        parametros.putString("nomelista", NomeLista);
+                        intent.putExtras(parametros);
+                        startActivity(intent);
+                    }
+                });
             }
         }
     }

@@ -80,6 +80,37 @@ public class ListaModel {
         return null;
     }
 
+    //obtem lista
+    public Entities.Retorno obterLista(JSONObject parametros, String nomelista, String token) {
+        try {
+            //carregar serviço API
+            Services service = new Services();
+
+            //faz login na api
+            JSONObject obj = service.obterListas(parametros, token);
+
+            //verifica se encontrou dados
+            if (obj != null) {
+                //grava dados em local
+                setLista(obj, nomelista);
+            } else {
+                //obter dados de local
+                JSONObject objLocal = getListaLocal(nomelista);
+                obj = objLocal;
+            }
+
+            //carrega obj retornado
+            Entities.Retorno retorno = parseRetorno(obj.getJSONObject("retorno"));
+
+            return retorno;
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     //region Métodos expostos
 
     //retorna dados locais
@@ -109,6 +140,33 @@ public class ListaModel {
         return null;
     }
 
+    //retorna dados locais
+    private JSONObject getListaLocal(String nomelista) {
+        try {
+            JSONObject obj = null;
+
+            //recuperar dados de arquivo
+            FileInputStream objLocal = new FileInputStream(nomelista);
+
+            //capturar dados de arquivo
+            String strObj = Helper.getStringArquivo(objLocal);
+
+            //verifica se possui informação
+            if (strObj != "") {
+
+                //converter dados para json
+                obj = new JSONObject(strObj);
+            }
+
+            return obj;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     //grava dados em local
     private void setListas(JSONObject obj) {
         try {
@@ -116,6 +174,20 @@ public class ListaModel {
             String strObj = obj.toString();
 
             FileOutputStream arquivo = new FileOutputStream(JSON_ARQUIVO);
+            arquivo.write(strObj.getBytes());
+            arquivo.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //grava dados em local
+    private void setLista(JSONObject obj, String nomelista) {
+        try {
+            //converter para string
+            String strObj = obj.toString();
+
+            FileOutputStream arquivo = new FileOutputStream(nomelista);
             arquivo.write(strObj.getBytes());
             arquivo.close();
         } catch (IOException e) {
