@@ -1,4 +1,4 @@
-package br.com.gruposvb.donachica;
+package br.com.gruposvb.donachica.Fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -6,17 +6,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import br.com.gruposvb.donachica.R;
+
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link Fragment_Tab1.OnFragmentInteractionListener} interface
+ * {@link Fragment_Tab3.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link Fragment_Tab1#newInstance} factory method to
+ * Use the {@link Fragment_Tab3#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class Fragment_Tab1 extends Fragment {
-    public Fragment_Tab1() {
+public class Fragment_Tab3 extends Fragment {
+    public Fragment_Tab3() {
         // Required empty public constructor
     }
 
@@ -29,6 +31,6 @@ public class Fragment_Tab1 extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_tab1, container, false);
+        return inflater.inflate(R.layout.fragment_tab3, container, false);
     }
 }

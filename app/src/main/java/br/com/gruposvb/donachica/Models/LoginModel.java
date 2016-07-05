@@ -13,7 +13,7 @@ import java.io.IOException;
 
 import br.com.gruposvb.donachica.Entities;
 import br.com.gruposvb.donachica.Helper;
-import br.com.gruposvb.donachica.Services;
+import br.com.gruposvb.donachica.Services.DonaChicaApi;
 
 /**
  * Created by ender on 29/06/2016.
@@ -108,7 +108,7 @@ public class LoginModel {
             arquivo.close();
 
             //esvazia sessão API
-            Services model = new Services();
+            DonaChicaApi model = new DonaChicaApi();
             model.getLogout();
 
         } catch (IOException e) {
@@ -201,7 +201,7 @@ public class LoginModel {
         try {
 
             //carregar serviço API
-            Services service = new Services();
+            DonaChicaApi service = new DonaChicaApi();
 
             //carrega parâmtros
             JSONObject parametros = new JSONObject();

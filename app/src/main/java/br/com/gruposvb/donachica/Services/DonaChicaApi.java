@@ -1,4 +1,4 @@
-package br.com.gruposvb.donachica;
+package br.com.gruposvb.donachica.Services;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,7 +13,7 @@ import java.net.URL;
 /**
  * Created by ender on 29/06/2016.
  */
-public class Services {
+public class DonaChicaApi {
 
     //region variáveis globais da classe
     private static final String Api = "http://www.gruposvb.com.br/DonaChicaApi/Simples";
@@ -22,7 +22,7 @@ public class Services {
     //endregion
 
     //cosntrutor
-    public Services() {
+    public DonaChicaApi() {
 
     }
 

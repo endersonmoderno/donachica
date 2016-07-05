@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#cbcbcb">
+
+    <CheckBox
+        android:id="@+id/selecionado"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:padding="8dp"/>
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:text="Item"
+        android:layout_toRightOf="@id/selecionado"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btconfig"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/ic_menu_manage"
+        android:tint="@color/cardview_light_background"
+        android:background="@color/colorPrimary"
+        android:padding="8dp"/>
+
+
+</RelativeLayout>

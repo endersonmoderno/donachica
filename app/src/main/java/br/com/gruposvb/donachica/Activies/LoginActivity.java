@@ -1,4 +1,4 @@
-package br.com.gruposvb.donachica;
+package br.com.gruposvb.donachica.Activies;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -38,6 +38,7 @@ import java.util.List;
 
 import br.com.gruposvb.donachica.Entities.Login;
 import br.com.gruposvb.donachica.Models.LoginModel;
+import br.com.gruposvb.donachica.R;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -330,7 +331,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
                 if(login.getStatus().equals("ok")) {
                     Toast.makeText(getApplicationContext(), R.string.entrando, Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(LoginActivity.this, MenuActivity.class);
+                    Intent intent = new Intent(LoginActivity.this, ListasActivity.class);
                     startActivity(intent);
                     finish();
                 }else{

@@ -15,32 +15,39 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MenuActivity"
+            android:name=".Activies.ListasActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".LoginActivity"
+            android:name=".Activies.LoginActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="br.com.gruposvb.donachica.LoginActivity" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".ListaActivity"
+            android:name=".Activies.CategoriasActivity"
             android:label="@string/title_activity_lista"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".MenuActivity">
+            android:parentActivityName=".Activies.ListasActivity"
+            android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="br.com.gruposvb.donachica.MenuActivity"/>
+                android:value=".Activies.ListasActivity" />
+        </activity>
+        <activity
+            android:name=".Activies.ItensActivity"
+            android:label="@string/title_activity_itens"
+            android:parentActivityName=".Activies.CategoriasActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Activies.CategoriasActivity" />
         </activity>
     </application>
 

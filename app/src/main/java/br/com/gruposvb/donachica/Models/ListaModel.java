@@ -16,7 +16,7 @@ import java.util.List;
 
 import br.com.gruposvb.donachica.Entities;
 import br.com.gruposvb.donachica.Helper;
-import br.com.gruposvb.donachica.Services;
+import br.com.gruposvb.donachica.Services.DonaChicaApi;
 
 /**
  * Created by ender on 01/07/2016.
@@ -53,7 +53,7 @@ public class ListaModel {
     public Entities.Retorno obterListas(JSONObject parametros, String token) {
         try {
             //carregar serviço API
-            Services service = new Services();
+            DonaChicaApi service = new DonaChicaApi();
 
             //faz login na api
             JSONObject obj = service.obterListas(parametros, token);
@@ -80,11 +80,11 @@ public class ListaModel {
         return null;
     }
 
-    //obtem lista
+    //obtem iten
     public Entities.Retorno obterLista(JSONObject parametros, String nomelista, String token) {
         try {
             //carregar serviço API
-            Services service = new Services();
+            DonaChicaApi service = new DonaChicaApi();
 
             //faz login na api
             JSONObject obj = service.obterListas(parametros, token);
@@ -239,7 +239,15 @@ public class ListaModel {
 
             retorno.setModulo(json.getString("modulo"));
             retorno.setRevisao(json.getInt("revisao"));
-            retorno.setListas(parseListas(json.getJSONArray("listas")));
+
+            //verifica se tipo de retorno é iten
+            if(retorno.getModulo().equals("listas")) {
+                //carrega iten
+                retorno.setListas(parseListas(json.getJSONArray("listas")));
+            }else{
+                //carrega objeto
+                retorno.setLista(parseLista(json));
+            }
 
         } catch (JSONException e) {
             e.printStackTrace();

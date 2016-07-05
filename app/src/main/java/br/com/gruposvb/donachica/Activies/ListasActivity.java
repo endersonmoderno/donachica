@@ -1,8 +1,7 @@
-package br.com.gruposvb.donachica;
+package br.com.gruposvb.donachica.Activies;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -29,14 +28,16 @@ import org.json.JSONObject;
 
 import java.util.List;
 
+import br.com.gruposvb.donachica.Entities;
 import br.com.gruposvb.donachica.Entities.Login;
 import br.com.gruposvb.donachica.Models.ListaModel;
 import br.com.gruposvb.donachica.Models.LoginModel;
+import br.com.gruposvb.donachica.R;
 
-public class MenuActivity extends AppCompatActivity
+public class ListasActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    public Context CONTEXTO = this;
+    private Context CONTEXTO = this;
     private List<Entities.Lista> LISTAS;
     private RecyclerView mRecyclerView;
     private MyRecyclerAdapter adapter;
@@ -57,7 +58,7 @@ public class MenuActivity extends AppCompatActivity
 
             if (objToken != null) {
 
-                setContentView(R.layout.activity_menu);
+                setContentView(R.layout.activity_listas);
                 Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
                 setSupportActionBar(toolbar);
 
@@ -84,7 +85,7 @@ public class MenuActivity extends AppCompatActivity
                     execListas.execute(objToken.getToken());
                 }
             } else {
-                Intent intent = new Intent(MenuActivity.this, LoginActivity.class);
+                Intent intent = new Intent(ListasActivity.this, LoginActivity.class);
                 startActivity(intent);
                 finish();
             }
@@ -181,7 +182,7 @@ public class MenuActivity extends AppCompatActivity
                 //carregar modelo
                 ListaModel model = new ListaModel(CONTEXTO);
 
-                //carregar lista
+                //carregar iten
                 Entities.Retorno retorno = model.obterListas(parametros, token);
 
                 //verifica se há retorno
@@ -226,10 +227,10 @@ public class MenuActivity extends AppCompatActivity
             progressBar.setVisibility(View.GONE);
 
             if (result == 1) {
-                adapter = new MyRecyclerAdapter(MenuActivity.this, LISTAS);
+                adapter = new MyRecyclerAdapter(ListasActivity.this, LISTAS);
                 mRecyclerView.setAdapter(adapter);
             } else {
-                Toast.makeText(MenuActivity.this, "Falha ao carregar dados", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ListasActivity.this, "Falha ao carregar dados", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -255,18 +256,18 @@ public class MenuActivity extends AppCompatActivity
         public void onBindViewHolder(CustomViewHolder customViewHolder, int i) {
             Entities.Lista lista = _listLista.get(i);
 
+            //carregar iten para holder
+            customViewHolder.lista = lista;
+
             //passar dados
             customViewHolder.textView.setText(Html.fromHtml(lista.getNome()));
             customViewHolder.textView2.setText(Html.fromHtml(lista.getDescricao()));
 
-            //definir link destino
-            customViewHolder.NomeLista = lista.getModulo();
-
             int cor; //determina cor
             int icone; //determina ícone
 
-            //verifica o tipo de lista
-            switch (customViewHolder.NomeLista){
+            //verifica o tipo de iten
+            switch (lista.getModulo()) {
                 case ("laranja"):
                     cor = getColor(R.color.laranja);
                     icone = R.drawable.ic_icone_laranja;
@@ -298,7 +299,7 @@ public class MenuActivity extends AppCompatActivity
             protected ImageView imageView2;
             protected TextView textView;
             protected TextView textView2;
-            protected String NomeLista;
+            protected Entities.Lista lista;
 
             public CustomViewHolder(View view) {
                 super(view);
@@ -311,9 +312,9 @@ public class MenuActivity extends AppCompatActivity
                 view.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent intent = new Intent(MenuActivity.this, ListaActivity.class);
+                        Intent intent = new Intent(ListasActivity.this, CategoriasActivity.class);
                         Bundle parametros = new Bundle();
-                        parametros.putString("nomelista", NomeLista);
+                        parametros.putSerializable("iten", lista);
                         intent.putExtras(parametros);
                         startActivity(intent);
                     }

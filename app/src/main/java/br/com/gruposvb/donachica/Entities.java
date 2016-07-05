@@ -1,13 +1,14 @@
 package br.com.gruposvb.donachica;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by ender on 02/07/2016.
  */
-public class Entities {
+public class Entities implements Serializable {
 
-    public static class Login {
+    public static class Login implements Serializable {
         private String token;
 
         public String getToken() {
@@ -39,7 +40,7 @@ public class Entities {
         }
     }
 
-    public static class Iten {
+    public static class Iten implements Serializable {
         private int id;
 
         public int getId() {
@@ -101,7 +102,7 @@ public class Entities {
         }
     }
 
-    public static class Categoria {
+    public static class Categoria implements Serializable {
         private int id;
 
         public int getId() {
@@ -133,7 +134,7 @@ public class Entities {
         }
     }
 
-    public static class Pessoa {
+    public static class Pessoa implements Serializable {
         private int id;
 
         public int getId() {
@@ -165,7 +166,7 @@ public class Entities {
         }
     }
 
-    public static class Lista {
+    public static class Lista implements Serializable {
         private int revisao;
 
         public int getRevisao() {
@@ -287,7 +288,7 @@ public class Entities {
         }
     }
 
-    public static class Conteudo {
+    public static class Conteudo implements Serializable {
         private int revisao;
 
         public int getRevisao() {
@@ -317,9 +318,19 @@ public class Entities {
         public void setListas(List<Lista> listas) {
             this.listas = listas;
         }
+
+        private Lista lista;
+
+        public Lista getLista() {
+            return this.lista;
+        }
+
+        public void setLista(Lista lista) {
+            this.lista = lista;
+        }
     }
 
-    public static class Dados {
+    public static class Dados implements Serializable {
         private Conteudo conteudo;
 
         public Conteudo getConteudo() {
@@ -331,7 +342,7 @@ public class Entities {
         }
     }
 
-    public static class Retorno {
+    public static class Retorno implements Serializable {
         private String status;
 
         public String getStatus() {
