@@ -129,8 +129,35 @@ public class ItensActivity extends AppCompatActivity {
                 //obter itens
                 getItens execItens = new getItens();
                 if (execItens == null || execItens.getStatus() != AsyncTask.Status.RUNNING) {
-                    execItens = new getItens();
                     execItens.execute();
+                }
+            }
+        }
+    }
+
+    //carrega dados
+    private void GravarIten(Entities.Iten iten) {
+
+        //carrega modelo
+        LoginModel model = new LoginModel(CONTEXTO);
+
+        //verifica se há modelo
+        if (model != null) {
+
+            //se não há TOKEN
+            if (TOKEN == null) {
+                //recupera token
+                TOKEN = model.obterToken();
+            }
+
+            //se há token e há iten
+            if (TOKEN != null && iten != null) {
+
+                //gravar iten
+                setIten execIten = new setIten();
+                if (execIten == null || execIten.getStatus() != AsyncTask.Status.RUNNING) {
+                    execIten.myItem = iten;
+                    execIten.execute();
                 }
             }
         }
@@ -162,55 +189,8 @@ public class ItensActivity extends AppCompatActivity {
                 //carregar iten
                 Entities.Retorno retorno = model.obterLista(parametros, LISTA.getModulo(), TOKEN.getToken());
 
-                //verifica se há retorno
-                if (retorno != null) {
-
-                    //verifica se retornou ok
-                    if (retorno.getStatus().equals("ok")) {
-
-                        //carrega dados
-                        Entities.Dados dados = retorno.getDados();
-                        if (dados != null) {
-
-                            //verifica conteudo
-                            Entities.Conteudo conteudo = dados.getConteudo();
-                            if (conteudo != null) {
-
-                                //verifica iten
-                                Entities.Lista lista = conteudo.getLista();
-                                if (lista != null) {
-
-                                    //verifica categorias
-                                    if (lista.getCategorias() != null) {
-
-                                        //varre categorias
-                                        for (Entities.Categoria categoria:lista.getCategorias()) {
-
-                                            //verifica se é categoria informada
-                                            if(categoria.getId() == CATEGORIA.getId()) {
-
-                                                //atualiza categoria parametrizada
-                                                CATEGORIA = categoria;
-
-                                                //verifica itens
-                                                if (categoria.getItens() != null) {
-
-                                                    //define acerto
-                                                    result = 1;
-
-                                                    //TODO: filtrar apenas itens não checados
-
-                                                    //carrega itens para tela
-                                                    ITENS = CATEGORIA.getItens();
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                //carregar retorno
+                result = CarregarRetorno(retorno);
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -229,6 +209,163 @@ public class ItensActivity extends AppCompatActivity {
                 mRecyclerView.setAdapter(adapter);
             } else {
                 Toast.makeText(ItensActivity.this, "Falha ao carregar dados", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    //salvar iten
+    class setIten extends AsyncTask<String, Void, Integer> {
+
+        public Entities.Iten myItem;
+
+        @Override
+        protected void onPreExecute() {
+            setProgressBarIndeterminateVisibility(true);
+        }
+
+        @Override
+        protected Integer doInBackground(String... params) {
+
+            //define erro
+            Integer result = 0;
+
+            //verifica se informou item
+            if (myItem != null) {
+
+                //carregar modelo
+                ListaModel model = new ListaModel(CONTEXTO);
+
+                //prepara dados para salvar LISTA
+                PrepararItemSalvar(myItem);
+
+                //ajusta revisão
+                //LISTA.setRevisao(LISTA.getRevisao() + 1);
+
+                //TODO: não está gravando, não é a revisão, verificar acentos no JSON, deve ser isso
+
+                //salvar lista
+                Entities.Retorno retorno = model.salvarLista(LISTA, LISTA.getModulo(), TOKEN.getToken());
+
+                //carregar retorno
+                result = CarregarRetorno(retorno);
+            }
+
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(Integer result) {
+            // Download complete. Let us update UI
+            progressBar.setVisibility(View.GONE);
+
+            if (result == 1) {
+                adapter = new MyRecyclerAdapter(ITENS);
+                mRecyclerView.setAdapter(adapter);
+            } else {
+                Toast.makeText(ItensActivity.this, "Falha ao carregar dados", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    //carrega dados de retorno
+    private Integer CarregarRetorno(Entities.Retorno retorno) {
+
+        Integer result = 0;
+
+        //verifica se há retorno
+        if (retorno != null) {
+
+            //verifica se retornou ok
+            if (retorno.getStatus().equals("ok")) {
+
+                //carrega dados
+                Entities.Dados dados = retorno.getDados();
+                if (dados != null) {
+
+                    //verifica conteudo
+                    Entities.Conteudo conteudo = dados.getConteudo();
+                    if (conteudo != null) {
+
+                        //verifica iten
+                        Entities.Lista lista = conteudo.getLista();
+                        if (lista != null) {
+
+                            //verifica categorias
+                            if (lista.getCategorias() != null) {
+
+                                //varre categorias
+                                for (Entities.Categoria categoria : lista.getCategorias()) {
+
+                                    //verifica se é categoria informada
+                                    if (categoria.getId() == CATEGORIA.getId()) {
+
+                                        //atualiza categoria parametrizada
+                                        CATEGORIA = categoria;
+
+                                        //verifica itens
+                                        if (categoria.getItens() != null) {
+
+                                            //define acerto
+                                            result = 1;
+
+                                            //TODO: filtrar apenas itens não checados
+
+                                            //carrega itens para tela
+                                            ITENS = CATEGORIA.getItens();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    //preparar dados para Salvar
+    private void PrepararItemSalvar(Entities.Iten myIten) {
+
+        //verifica se tem lista
+        if (LISTA != null) {
+
+            //verifica categorias
+            if (LISTA.getCategorias() != null) {
+
+                //define novos itens
+                //List<Entities.Categoria> categoriasNew = LISTA.getCategorias();
+
+                //varre categorias
+                for (Entities.Categoria categoria : LISTA.getCategorias()) {
+
+                    //verifica se é categoria informada
+                    if (categoria.getId() == CATEGORIA.getId()) {
+
+                        //verifica itens
+                        if (categoria.getItens() != null) {
+
+                            //define novos itens
+                            //List<Entities.Iten> itensNew = categoria.getItens();
+
+                            //varre itens
+                            for (Entities.Iten iten : categoria.getItens()) {
+
+                                //verifica se é o iten informada
+                                if (iten.getId() == myIten.getId()) {
+
+                                    //carrega iten com alterações
+                                    iten.setCheck(myIten.getCheck());
+                                    iten.setQtde(myIten.getQtde());
+                                    iten.setTexto(myIten.getTexto());
+                                    iten.setQtate(myIten.getQtde());
+                                    iten.setId(myIten.getId());
+                                    iten.setNaoachou(myIten.getNaoachou());
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -256,7 +393,7 @@ public class ItensActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(CustomViewHolder customViewHolder, int i) {
-            Entities.Iten iten = _listIten.get(i);
+            final Entities.Iten iten = _listIten.get(i);
 
             //carregar iten para holder
             customViewHolder.iten = iten;
@@ -272,8 +409,9 @@ public class ItensActivity extends AppCompatActivity {
             customViewHolder.checkBox.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //TODO: gravar seleção
-                    Toast.makeText(ItensActivity.this, "Teste Ok", Toast.LENGTH_SHORT).show();
+                    iten.setCheck(!iten.getCheck());
+                    GravarIten(iten);
+                    Toast.makeText(ItensActivity.this, "Gravando...", Toast.LENGTH_SHORT).show();
                 }
             });
 

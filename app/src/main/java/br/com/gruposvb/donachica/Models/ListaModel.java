@@ -80,7 +80,7 @@ public class ListaModel {
         return null;
     }
 
-    //obtem iten
+    //obtem lista
     public Entities.Retorno obterLista(JSONObject parametros, String nomelista, String token) {
         try {
             //carregar serviço API
@@ -109,6 +109,41 @@ public class ListaModel {
         }
 
         return null;
+    }
+
+    //salvar lista
+    public Entities.Retorno salvarLista(Entities.Lista object, String nomelista, String token) {
+        //carregar serviço API
+        DonaChicaApi service = new DonaChicaApi();
+
+        //parse json to object
+        JSONObject jsonObject = parseLista(object);
+
+        //faz login na api
+        JSONObject obj = service.salvarListas(jsonObject, token);
+
+        //verifica se encontrou dados
+        if (obj != null) {
+            //grava dados em local
+            setLista(obj, nomelista);
+        } else {
+            //obter dados de local
+            JSONObject objLocal = getListaLocal(nomelista);
+            obj = objLocal;
+        }
+
+        //carrega obj retornado (constroi estrutura pois API retorna diferente)
+        Entities.Retorno retorno = new Entities.Retorno();
+        retorno.setStatus("ok");
+        Entities.Dados dados = new Entities.Dados();
+        Entities.Conteudo conteudo = new Entities.Conteudo();
+        conteudo.setModulo(nomelista);
+        conteudo.setRevisao(object.getRevisao());
+        conteudo.setLista(parseLista(obj));
+        dados.setConteudo(conteudo);
+        retorno.setDados(dados);
+
+        return retorno;
     }
 
     //region Métodos expostos
@@ -358,4 +393,163 @@ public class ListaModel {
 
     //endregion
 
+    //region Parses Entity to Json
+
+    //Parse Retorno
+    public JSONObject parseRetorno(Entities.Retorno retorno) {
+
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            jsonObject.put("status", retorno.getStatus());
+            jsonObject.put("dados", parseDados(retorno.getDados()));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return jsonObject;
+    }
+
+    //Parse Dados
+    public JSONObject parseDados(Entities.Dados dados) {
+
+        JSONObject retorno = new JSONObject();
+
+        try {
+            retorno.put("conteudo", parseConteudo(dados.getConteudo()));
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return retorno;
+    }
+
+    //Parse Conteúdo
+    public JSONObject parseConteudo(Entities.Conteudo conteudo) {
+
+        JSONObject retorno = new JSONObject();
+
+        try {
+
+            retorno.put("modulo", conteudo.getModulo());
+            retorno.put("revisao", conteudo.getRevisao());
+
+            //verifica se tipo de retorno é iten
+            if(conteudo.getModulo().equals("listas")) {
+                //carrega iten
+                retorno.put("listas",parseListas(conteudo.getListas()));
+            }else{
+                //carrega objeto
+                retorno.put("lista",parseLista(conteudo.getLista()));
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return retorno;
+    }
+
+    //Parse Listas
+    public JSONArray parseListas(List<Entities.Lista> listas) {
+        JSONArray array = new JSONArray();
+        for (Entities.Lista lista : listas) {
+            array.put(parseLista(lista));
+        }
+        return array;
+    }
+
+    //Parse Lista
+    public JSONObject parseLista(Entities.Lista obj) {
+        JSONObject lista = new JSONObject();
+        try {
+            lista.put("revisao", obj.getRevisao());
+            lista.put("modulo", obj.getModulo());
+            lista.put("categorias", parseCategorias(obj.getCategorias()));
+            lista.put("checados", obj.getChecados());
+            lista.put("cor", obj.getCor());
+            lista.put("descricao", obj.getDescricao());
+            lista.put("dtalteracao", obj.getDtalteracao());
+            lista.put("icone", obj.getIcone());
+            lista.put("id", obj.getId());
+            lista.put("naochecados", obj.getNaochecados());
+            lista.put("nome", obj.getNome());
+            lista.put("pessoas", parsePessoas(obj.getPessoas()));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return lista;
+    }
+
+    //Parse Categorias
+    public JSONArray parseCategorias(List<Entities.Categoria> categorias) {
+        JSONArray array = new JSONArray();
+        for (Entities.Categoria categoria : categorias) {
+            array.put(parseCategoria(categoria));
+        }
+        return array;
+    }
+
+    //Parse Pessoas
+    public JSONArray parsePessoas(List<Entities.Pessoa> pessoas) {
+        JSONArray array = new JSONArray();
+        for (Entities.Pessoa pessoa : pessoas) {
+            array.put(parsePessoa(pessoa));
+        }
+        return array;
+    }
+
+    //Parse Categoria
+    public JSONObject parseCategoria(Entities.Categoria categoria) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("id", categoria.getId());
+            jsonObject.put("nome", categoria.getNome());
+            jsonObject.put("itens", parseItens(categoria.getItens()));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonObject;
+    }
+
+    //Parse Pessoa
+    public JSONObject parsePessoa(Entities.Pessoa pessoa) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("id", pessoa.getId());
+            jsonObject.put("nome", pessoa.getNome());
+            jsonObject.put("email", pessoa.getEmail());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonObject;
+    }
+
+    //Parse Itens
+    public JSONArray parseItens(List<Entities.Iten> itens) {
+        JSONArray jsonArray = new JSONArray();
+        for (Entities.Iten iten : itens) {
+            jsonArray.put(parseIten(iten));
+        }
+        return jsonArray;
+    }
+
+    //Parse Iten
+    public JSONObject parseIten(Entities.Iten iten) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("id", iten.getId());
+            jsonObject.put("check", iten.getCheck());
+            jsonObject.put("naoachou", iten.getNaoachou());
+            jsonObject.put("qtate", iten.getQtate());
+            jsonObject.put("qtde", iten.getQtde());
+            jsonObject.put("texto", iten.getTexto());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonObject;
+    }
+
+    //endregion
 }

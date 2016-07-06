@@ -138,7 +138,6 @@ public class DonaChicaApi {
     //region API - mod_donachica
 
     //invoca API mod_donachica/conteudo/obter
-
     public JSONObject obterListas(JSONObject parametro, String token) {
 
         //define retorno padrão
@@ -147,6 +146,30 @@ public class DonaChicaApi {
         try {
             //define url api
             String url = Api + "/mod_donachica/api.php/conteudo/obter/" + token;
+
+            //posta dados para api e recebe json
+            String json = send(url, parametro.toString(), POST);
+
+            //verifica se há resposta e converte para obj
+            if(json != "")
+                obj = new JSONObject(json);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return obj;
+    }
+
+    //invoca API mod_donachica/conteudo/salvar
+    public JSONObject salvarListas(JSONObject parametro, String token) {
+
+        //define retorno padrão
+        JSONObject obj = null;
+
+        try {
+            //define url api
+            String url = Api + "/mod_donachica/api.php/conteudo/salvar/" + token;
 
             //posta dados para api e recebe json
             String json = send(url, parametro.toString(), POST);
