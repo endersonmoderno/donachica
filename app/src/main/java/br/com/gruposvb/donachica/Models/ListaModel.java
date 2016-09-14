@@ -86,21 +86,35 @@ public class ListaModel {
             //carregar serviço API
             DonaChicaApi service = new DonaChicaApi();
 
-            //faz login na api
-            JSONObject obj = service.obterListas(parametros, token);
+            //recupera dados da api
+            //JSONObject obj = service.obterListas(parametros, token);
+            JSONObject obj = null;//TODO: força os dados locais
+
+            //determina retorno
+            Entities.Retorno retorno = null;
 
             //verifica se encontrou dados
             if (obj != null) {
                 //grava dados em local
                 setLista(obj, nomelista);
+
+                //carrega obj retornado
+                retorno = parseRetorno(obj.getJSONObject("retorno"));
             } else {
                 //obter dados de local
                 JSONObject objLocal = getListaLocal(nomelista);
-                obj = objLocal;
-            }
 
-            //carrega obj retornado
-            Entities.Retorno retorno = parseRetorno(obj.getJSONObject("retorno"));
+                //carrega obj retornado (constroi estrutura pois API retorna diferente)
+                retorno = new Entities.Retorno();
+                retorno.setStatus("ok");
+                Entities.Dados dados = new Entities.Dados();
+                Entities.Conteudo conteudo = new Entities.Conteudo();
+                conteudo.setModulo(nomelista);
+                conteudo.setRevisao(1);
+                conteudo.setLista(parseLista(objLocal));
+                dados.setConteudo(conteudo);
+                retorno.setDados(dados);
+            }
 
             return retorno;
 
@@ -119,8 +133,9 @@ public class ListaModel {
         //parse json to object
         JSONObject jsonObject = parseLista(object);
 
-        //faz login na api
-        JSONObject obj = service.salvarListas(jsonObject, token);
+        //salva dados na api
+        //JSONObject obj = service.salvarListas(jsonObject, token);
+        JSONObject obj = jsonObject; //TODO: força o uso de dados locais
 
         //verifica se encontrou dados
         if (obj != null) {
@@ -181,7 +196,7 @@ public class ListaModel {
             JSONObject obj = null;
 
             //recuperar dados de arquivo
-            FileInputStream objLocal = new FileInputStream(nomelista);
+            FileInputStream objLocal = new FileInputStream(CTX.getFilesDir().getPath() + "/" + nomelista);
 
             //capturar dados de arquivo
             String strObj = Helper.getStringArquivo(objLocal);
@@ -222,7 +237,7 @@ public class ListaModel {
             //converter para string
             String strObj = obj.toString();
 
-            FileOutputStream arquivo = new FileOutputStream(nomelista);
+            FileOutputStream arquivo = new FileOutputStream(CTX.getFilesDir().getPath() + "/" + nomelista);
             arquivo.write(strObj.getBytes());
             arquivo.close();
         } catch (IOException e) {
